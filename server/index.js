@@ -13,10 +13,10 @@ app.post('/person', async (req, res) => {
     try {
         const { fullname, email } = req.body;
         const newPerson = await pool.query(
-            "INSERT INTO person (fullname, email) VALUES($1, $2)",
+            "INSERT INTO person (fullname, email) VALUES($1, $2) RETURNING *",
             [fullname, email]
         );
-        res.json(newPerson);
+        res.json(newPerson.rows[0]);
     } catch (err) {
         console.error(err.message);
     }

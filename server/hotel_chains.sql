@@ -42,20 +42,23 @@ CREATE TABLE rooms (
 CREATE TABLE person (
   SIN serial PRIMARY KEY,
   fullname varchar NOT NULL,
-  email varchar NOT NULL,
   gender varchar,
   phone_number varchar[],
-  address varchar
+  address varchar[]
 );
 
 CREATE TABLE customers (
   SIN serial,
+  email varchar NOT NULL,
+  password varchar NOT NULL,
   customer_id serial PRIMARY KEY,
   registration_date date NOT NULL
 );
 
 CREATE TABLE employees (
   SIN serial,
+  email varchar NOT NULL,
+  password varchar NOT NULL,
   role varchar,
   employee_id serial PRIMARY KEY,
   hotel_id serial
