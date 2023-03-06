@@ -41,10 +41,7 @@ CREATE TABLE rooms (
 
 CREATE TABLE person (
   SIN serial PRIMARY KEY,
-  fullname varchar NOT NULL,
-  gender varchar,
-  phone_number varchar[],
-  address varchar[]
+  fullname varchar NOT NULL
 );
 
 CREATE TABLE customers (
@@ -52,7 +49,9 @@ CREATE TABLE customers (
   email varchar NOT NULL,
   password varchar NOT NULL,
   customer_id serial PRIMARY KEY,
-  registration_date date NOT NULL
+  registration_date date NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  phone_number varchar[],
+  address varchar[]
 );
 
 CREATE TABLE employees (
@@ -61,7 +60,9 @@ CREATE TABLE employees (
   password varchar NOT NULL,
   role varchar,
   employee_id serial PRIMARY KEY,
-  hotel_id serial
+  hotel_id serial,
+  phone_number varchar[],
+  address varchar[]
 );
 
 CREATE TABLE reservation (
@@ -88,9 +89,13 @@ ALTER TABLE rooms ADD FOREIGN KEY (hotel_id) REFERENCES hotels (hotel_id) ON DEL
 
 ALTER TABLE customers ADD FOREIGN KEY (SIN) REFERENCES person (SIN) ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE customers ADD FOREIGN KEY (email) REFERENCES person (email) ON DELETE CASCADE ON UPDATE CASCADE;
+
 ALTER TABLE employees ADD FOREIGN KEY (hotel_id) REFERENCES hotels (hotel_id);
 
 ALTER TABLE employees ADD FOREIGN KEY (SIN) REFERENCES person (SIN) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE employees ADD FOREIGN KEY (email) REFERENCES person (email) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE reservation ADD FOREIGN KEY (chain_id) REFERENCES chains (chain_id) ON UPDATE CASCADE;
 

@@ -72,17 +72,19 @@ app.post('/customer', async (req, res) => {
 
     try {
         const { name, email, phone, streetNumber, streetName, region, city, postalCode, password } = req.body;
-        let today = new Date().toLocaleDateString();
         if(streetNumber == null || streetNumber == undefined || streetNumber == ""){
             address = null;
         }else{
-            address = [streetNumber + "$" + streetName + "$" + region + "$" + city + "$" + postalCode];
+            address = [streetNumber + "&" + streetName + "&" + region + "&" + city + "&" + postalCode];
         }
         let password_encrypt = await bcrypt.hashSync(password, secret_key);
+        const newPerson = await pool.query("INSERT INTO person (fullname, email) VALUES ($1, $2) RETURNING *", [name, email]);
+        // console.log(newPerson.rows[0]);
         const newCustomer = await pool.query(
-            "INSERT INTO customers (email, password, registration_date, fullname, phone_number, address) VALUES($1, $2, $3, $4, $5, $6) RETURNING *",
-            [email, password_encrypt, today, name, phone, address]
+            "INSERT INTO customers (sin, email, password, phone_number, address) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            [newPerson.rows[0].sin, email, password_encrypt, [phone], [address]]
         );
+        // console.log(newCustomer.rows[0]);
         res.json(newCustomer.rows[0]);
     } catch (err) {
         console.error(err.message);
