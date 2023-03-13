@@ -3,11 +3,18 @@ const app = express();
 const cors = require('cors');
 const pool = require('./db');
 const bcrypt = require('bcryptjs');
-const secret_key = bcrypt.genSaltSync(10);
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
+const secret_key = bcrypt.genSaltSync(10);
+const jwtSecret = "sdhbfsijfdbvsaijbvsab";
 // middleware
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+}));
 app.use(express.json());
+app.use(cookieParser());
 
 // ***** basic routing
 
@@ -105,7 +112,13 @@ app.post('/customer/login', async (req, res) => {
             }else{
                 let password_decrypt = await bcrypt.compareSync(password, customer.rows[0].password);
                 if(password_decrypt){
-                    res.json(customer.rows[0]);
+                    jwt.sign({id:customer.rows[0].sin}, jwtSecret, {}, (err, token) => {
+                        if(err){
+                            res.json("Error");
+                        }else{
+                            res.cookie("token", token).json(customer.rows[0]);
+                        }
+                    });
                 }else{
                     res.json("Wrong password");
                 }
@@ -113,6 +126,26 @@ app.post('/customer/login', async (req, res) => {
         } catch (err) {
             console.error(err.message);
         }
+});
+
+app.get("/profile", async (req, res) => {
+    const token = req.cookies.token;
+    if(token){
+        jwt.verify(token, jwtSecret, {}, async (err, decoded) => {
+            if(err){
+                throw err;
+            }else{
+                const customer = await pool.query(
+                    "SELECT * FROM person WHERE sin = $1",
+                    [decoded.id]
+                );
+                res.json(customer.rows[0]);
+            }
+        });
+    }else{
+        res.json(null);
+    }
+    
 });
 
 app.listen(6060, () => {
