@@ -1,9 +1,9 @@
-import { Link, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import axios from "axios";
 import { UserContext } from "../UserContext";
 
-export default function Login() {
+export default function EmployeeLogin() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [redirect, setRedirect] = useState(false);
@@ -11,7 +11,7 @@ export default function Login() {
     async function handleLogin(ev) {
         ev.preventDefault();
         try {
-            const response = await axios.post("/customer/login", { email, password });
+            const response = await axios.post("/employee/login", { email, password });
             if(typeof response.data === "string") {
                 alert(response.data);
                 return;
@@ -25,12 +25,12 @@ export default function Login() {
     } 
 
     if(redirect) {
-        return <Navigate to="/" />
+        return <Navigate to="/account" />
     }
     return (
         <div className="mt-4 grow flex items-center justify-around">
             <div className="mb-32">
-                <h1 className="text-4xl text-center mb-6">Login</h1>
+                <h1 className="text-4xl text-center mb-6">Administrative Login</h1>
                 <form className="max-w-md mx-auto" onSubmit={handleLogin}>
                     <input type="email" placeholder="your@email.com"
                     value={email} 
@@ -39,12 +39,6 @@ export default function Login() {
                     value={password} 
                     onChange={ev => setPassword(ev.target.value)}/>
                     <button type="submit">Login</button>
-                    <div className="text-center py-2 text-gray-500">
-                        Don't have an account ? <Link className="underline text-black" to={"/register"}>Register now</Link>
-                    </div>
-                    <div className="text-center text-gray-500">
-                        Work here ? <Link className="underline text-black" to={"/employee_login"}>Login</Link>
-                    </div>
                 </form>
             </div>
         </div>

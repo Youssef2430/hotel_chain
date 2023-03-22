@@ -135,11 +135,39 @@ app.get("/profile", async (req, res) => {
             if(err){
                 throw err;
             }else{
-                const customer = await pool.query(
+                const person = await pool.query(
                     "SELECT * FROM person WHERE sin = $1",
                     [decoded.id]
                 );
-                res.json(customer.rows[0]);
+                res.json(person.rows[0]);
+            }
+        });
+    }else{
+        res.json(null);
+    }
+    
+});
+
+app.get("/role", async (req, res) => {
+    const token = req.cookies.token;
+    if(token){
+        jwt.verify(token, jwtSecret, {}, async (err, decoded) => {
+            if(err){
+                throw err;
+            }else{
+                const person = await pool.query(
+                    "SELECT * FROM customers WHERE sin = $1",
+                    [decoded.id]
+                );
+                if(person.rows.length == 0){
+                    const employee = await pool.query(
+                        "SELECT * FROM employees WHERE sin = $1",
+                        [decoded.id]
+                    );
+                    res.json(employee.rows[0].role);
+                }else{
+                    res.json('customer');
+                }
             }
         });
     }else{
@@ -150,4 +178,78 @@ app.get("/profile", async (req, res) => {
 
 app.listen(6060, () => {
   console.log('Server is running on port 6060');
+});
+
+// post request to add employee
+app.post('/employee_admin', async (req, res) => {
+
+    try {
+        const { name, email, address, password } = req.body;
+        let password_encrypt = await bcrypt.hashSync(password, secret_key);
+        role = "admin";
+        const newPerson = await pool.query("INSERT INTO person (fullname, email) VALUES ($1, $2) RETURNING *", [name, email]);
+        // console.log(newPerson.rows[0]);
+        const newEmployee = await pool.query(
+            "INSERT INTO employees (sin, email, password, role, address) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            [newPerson.rows[0].sin, email, password_encrypt, role, [address]]
+        );
+        // console.log(newCustomer.rows[0]);
+        res.json(newEmployee.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+// post request to login customer
+app.post('/employee/login', async (req, res) => {
+    
+    try {
+        const { email, password } = req.body;
+        const employee = await pool.query(
+            "SELECT * FROM employees WHERE email = $1",
+            [email]
+        );
+        if(employee.rows.length == 0){
+            res.json("No employee found");
+        }else{
+            let password_decrypt = await bcrypt.compareSync(password, employee.rows[0].password);
+            if(password_decrypt){
+                jwt.sign({id:employee.rows[0].sin}, jwtSecret, {}, (err, token) => {
+                    if(err){
+                        res.json("Error");
+                    }else{
+                        res.cookie("token", token).json(employee.rows[0]);
+                    }
+                });
+            }else{
+                res.json("Wrong password");
+            }
+        }
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.post('/logout', (req, res) => {
+    res.cookie("token", "").json(true);
+});
+
+app.post("/hotel_chain", async (req, res) => {
+    try {
+        const { chain_name } = req.body;
+        const newChain = await pool.query("INSERT INTO chains (name) VALUES ($1) RETURNING *", [chain_name]);
+        // console.log(newCustomer.rows[0]);
+        res.json(newChain.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.get('/hotel_chain', async (req, res) => {
+    try {
+        const allChains = await pool.query("SELECT * FROM chains");
+        res.json(allChains.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
 });
