@@ -273,3 +273,29 @@ app.get('/hotel', async (req, res) => {
         console.error(err.message);
     }
 });
+
+app.get('/employee', async (req, res) => {
+    try {
+        const allEmployees = await pool.query("SELECT * FROM employees");
+        res.json(allEmployees.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.post('/employee', async (req, res) => {
+    try {
+        const { name, email, address, password, role, hotelId } = req.body;
+        let password_encrypt = await bcrypt.hashSync(password, secret_key);
+        const newPerson = await pool.query("INSERT INTO person (fullname, email) VALUES ($1, $2) RETURNING *", [name, email]);
+        // console.log(newPerson.rows[0]);
+        const newEmployee = await pool.query(
+            "INSERT INTO employees (sin, email, password, role, address, hotel_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+            [newPerson.rows[0].sin, email, password_encrypt, role, [address], hotelId]
+        );
+        // console.log(newCustomer.rows[0]);
+        res.json(newEmployee.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );

@@ -3,6 +3,7 @@ import {useContext, useEffect, useState} from 'react';
 import { Navigate, useNavigate } from 'react-router';
 import { Link, useParams } from 'react-router-dom';
 import {UserContext} from '../UserContext.jsx';
+import RoomsPage from './RoomsPage.jsx';
 
 export default function AccountPage() {
     const {role, ready, user, setUser} = useContext(UserContext);
@@ -19,6 +20,13 @@ export default function AccountPage() {
     const [region, setRegion] = useState("");
     const [city, setCity] = useState("");
     const [postalCode, setPostalCode] = useState("");
+    const [employees, setEmployees] = useState([]);
+    const [name, setName] = useState("");
+    const [password, setPassword] = useState("");
+    const [hotelId, setHotelId] = useState("");
+    const [role_new, setRole] = useState("");
+
+
     let {subpage} = useParams();
     const navigate = useNavigate();
     useEffect(() => {
@@ -27,6 +35,9 @@ export default function AccountPage() {
         });
         axios.get("/hotel").then((data) => {
             setHotels(data.data);
+        });
+        axios.get("/employee").then((data) => {
+            setEmployees(data.data);
         });
     }, []);
 
@@ -61,6 +72,22 @@ export default function AccountPage() {
             alert("A problem occured !");
         }
     } 
+
+    async function handleAddEmployee(ev) {
+        ev.preventDefault();
+        try {
+            let address = streetNumber + " " + streetName + ", " + city + ", " + region + ", " + postalCode;
+            const response = await axios.post("/employee", { name, password, email, phone, address, hotelId, role: role_new });
+            if(typeof response.data === "string") {
+                alert(response.data);
+                return;
+            }
+            alert("Employee added !");
+            navigate('/account/employees');
+        } catch (error) {
+            alert("A problem occured !");
+        }
+    }
 
 
 
@@ -98,6 +125,9 @@ export default function AccountPage() {
         if(type === "hotel" && subpage === 'add_hotel') {
             return 'py-2 px-4 bg-primary text-white rounded-full';
         }
+        if (type === "employees" && subpage === 'add_employee') {
+            return 'py-2 px-4 bg-primary text-white rounded-full';
+        }
         return 'py-2 px-4';
     }
     
@@ -108,7 +138,8 @@ export default function AccountPage() {
                 {role === 'admin' && <Link className={linkClasses('hotel_chain')} to="/account/hotel_chain">Hotel Chains</Link>}
                 {role === 'admin' && <Link className={linkClasses('hotel')} to="/account/hotel">Hotels</Link>}
                 {role === 'admin' && <Link className={linkClasses('employees')} to="/account/employees">Employees</Link>}
-                {role === 'admin' && <Link className={linkClasses('rooms')} to="/account/rooms">Rooms</Link>}
+                {(role === 'admin' || role === 'employee') && <Link className={linkClasses('rooms')} to="/account/rooms">Rooms</Link>}
+                {(role === 'admin' || role === 'employee') && <Link className={linkClasses('reservations')} to="/account/reservations">Reservations</Link>}
                 {role === 'customer' && <Link className={linkClasses('bookings')} to="/account/bookings">Bookings</Link>}
             </nav>
             {subpage === 'profile' && 
@@ -187,6 +218,75 @@ export default function AccountPage() {
                     <button className='text-white' type="submit">Add Chain</button>
                 </form>
             </div>}
+            {subpage === 'employees' && 
+            <div className='text-center max-w-lg mx-auto'>
+                <div className='py-6'>List of employees</div>
+                <div className='px-4 py-6'>
+                    {employees.length > 0 && employees.map(employee => {
+                        return <div className='bg-gray-200 border border-white py-1' key={employee.sin}>{employee.email} | {employee.role}</div>
+                    })}
+                </div>
+                <Link className="py-2 px-4 bg-primary text-white rounded-full" to="/account/employees/add_employee">Add an employee</Link>
+            </div>}
+            {subpage === 'add_employee' && 
+            <div className='text-center max-w-lg mx-auto'>
+                <div className='py-6'>Register a new employee</div>
+                <div className='px-4 py-6'>
+                <form className="max-w-md mx-auto" onSubmit={handleAddEmployee}>
+                    <input type="text" placeholder="Name" 
+                    value={name} 
+                    onChange={ev => setName(ev.target.value)}/>
+                    <input type="email" placeholder="your@email.com" 
+                    value={email} 
+                    onChange={ev => setEmail(ev.target.value)}/>
+                    <input type="tel" placeholder="Phone number" 
+                    value={phone} 
+                    onChange={ev => setPhone(ev.target.value)}/>
+                    <div className="flex gap-1 justify-around">
+                        <div className="w-{1/8}" >
+                        <input type="text" placeholder="Street number" 
+                        value={streetNumber} 
+                        onChange={ev => setStreetNumber(ev.target.value)}/>
+                        </div>
+                        <input type="text" placeholder="Street name" 
+                        value={streetName} 
+                        onChange={ev => setStreetName(ev.target.value)}/>
+                    </div>
+                    <div className="flex gap-1 justify-around">
+                    <input type="text" placeholder="Region" 
+                    value={region} 
+                    onChange={ev => setRegion(ev.target.value)}/>
+                    <input type="text" placeholder="City" 
+                    value={city} 
+                    onChange={ev => setCity(ev.target.value)}/>
+                    <input type="text" placeholder="Postal code" 
+                    value={postalCode} 
+                    onChange={ev => setPostalCode(ev.target.value)}/>
+                    </div>
+
+                    <select className='w-full border my-2 py-2 px-3 rounded-2xl' onChange={e=>setHotelId(e.target.value)}>
+                        <option value="">Select a hotel</option>
+                        {hotels.map(hotel => {
+                            return <option value={hotel.hotel_id}>{hotel.hname}</option>
+                        })}
+                    </select>
+                    <select className='w-full border my-2 py-2 px-3 rounded-2xl' onChange={e=>setRole(e.target.value)}>
+                        <option value="">Select a role</option>
+                        <option value="manager">Manager</option>
+                        <option value="employee">Employee</option>
+                    </select>
+                    
+
+                    
+                    <input type="password" placeholder="Password" 
+                    value={password} 
+                    onChange={ev => setPassword(ev.target.value)}/>
+                    <button className="py-2 px-4 bg-primary text-white rounded-full" type="submit">Register employee</button>
+                </form>
+                </div>
+            </div>}
+            {subpage === 'rooms' && 
+            <RoomsPage/>}
         </div>
     );
     
