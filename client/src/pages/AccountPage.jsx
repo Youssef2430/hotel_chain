@@ -3,6 +3,9 @@ import {useContext, useEffect, useState} from 'react';
 import { Navigate, useNavigate } from 'react-router';
 import { Link, useParams } from 'react-router-dom';
 import {UserContext} from '../UserContext.jsx';
+import EmployeesPage from './EmployeesPage.jsx';
+import HotelChainsPage from './HotelChainsPage.jsx';
+import HotelsPage from './HotelsPage.jsx';
 import RoomsPage from './RoomsPage.jsx';
 
 export default function AccountPage() {
@@ -148,15 +151,7 @@ export default function AccountPage() {
                 <button onClick={logout} className='bg-primary py-2 px-4 rounded-full w-full my-6 text-white'>Logout</button>    
             </div>}
             {subpage === 'hotel_chain' && 
-            <div className='text-center max-w-lg mx-auto'>
-                <div className='py-6'>List of hotel chains</div>
-                <div className='px-4 py-6'>
-                    {chains.length > 0 && chains.map(chain => {
-                        return <div className='bg-gray-200 border border-white py-1' key={chain.chain_id}>{chain.name}</div>
-                    })}
-                </div>
-                <Link className="py-2 px-4 bg-primary text-white rounded-full" to="/account/hotel_chain/add_hotel_chain">Add a hotel chain</Link>
-            </div>}
+            <HotelChainsPage/>}
             {subpage === 'add_hotel_chain' && 
             <div className='text-center max-w-lg mx-auto'>
                 <form className="max-w-md mx-auto" onSubmit={handleAddChain}>
@@ -167,15 +162,7 @@ export default function AccountPage() {
                 </form>
             </div>}
             {subpage === 'hotel' && 
-            <div className='text-center max-w-lg mx-auto'>
-                <div className='py-6'>List of hotels</div>
-                <div className='px-4 py-6'>
-                    {hotels.length > 0 && hotels.map(hotel => {
-                        return <div className='bg-gray-200 border border-white py-1' key={hotel.hotel_id}>{hotel.hname}</div>
-                    })}
-                </div>
-                <Link className="py-2 px-4 bg-primary text-white rounded-full" to="/account/hotel_chain/add_hotel">Add a hotel</Link>
-            </div>}
+            <HotelsPage/>}
             {subpage === 'add_hotel' && 
             <div className='text-center max-w-lg mx-auto'>
                 <form className="max-w-md mx-auto" onSubmit={handleAddHotel}>
@@ -219,15 +206,7 @@ export default function AccountPage() {
                 </form>
             </div>}
             {subpage === 'employees' && 
-            <div className='text-center max-w-lg mx-auto'>
-                <div className='py-6'>List of employees</div>
-                <div className='px-4 py-6'>
-                    {employees.length > 0 && employees.map(employee => {
-                        return <div className='bg-gray-200 border border-white py-1' key={employee.sin}>{employee.email} | {employee.role}</div>
-                    })}
-                </div>
-                <Link className="py-2 px-4 bg-primary text-white rounded-full" to="/account/employees/add_employee">Add an employee</Link>
-            </div>}
+            <EmployeesPage/>}
             {subpage === 'add_employee' && 
             <div className='text-center max-w-lg mx-auto'>
                 <div className='py-6'>Register a new employee</div>
