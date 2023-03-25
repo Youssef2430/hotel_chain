@@ -10,6 +10,7 @@ import HotelAdd from './HotelAdd.jsx';
 import HotelChainsPage from './HotelChainsPage.jsx';
 import HotelsPage from './HotelsPage.jsx';
 import RoomsPage from './RoomsPage.jsx';
+import RoomAdd from './RoomAdd.jsx';
 
 export default function AccountPage() {
     const {role, ready, user, setUser} = useContext(UserContext);
@@ -54,6 +55,9 @@ export default function AccountPage() {
         if (type === "employees" && subpage === 'add_employee') {
             return 'py-2 px-4 bg-primary text-white rounded-full';
         }
+        if (type === "rooms" && subpage === 'add_room') {
+            return 'py-2 px-4 bg-primary text-white rounded-full';
+        }
         return 'py-2 px-4';
     }
     
@@ -87,6 +91,8 @@ export default function AccountPage() {
             <EmployeeAdd/>}
             {subpage === 'rooms' && 
             <RoomsPage/>}
+            {subpage === 'add_room' &&
+            <RoomAdd/>}
         </div>
     );
     

@@ -5,6 +5,9 @@ const pool = require('./db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const imagedownloader = require('image-downloader');
+const multer = require('multer');
+const fs = require('fs');
 
 const secret_key = bcrypt.genSaltSync(10);
 const jwtSecret = "sdhbfsijfdbvsaijbvsab";
@@ -13,6 +16,7 @@ app.use(cors({
     origin: "http://localhost:3000",
     credentials: true
 }));
+app.use('/uploads', express.static(__dirname+'/uploads'));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -299,3 +303,27 @@ app.post('/employee', async (req, res) => {
         console.error(err.message);
     }
 } );
+
+app.post('/upload-by-link', async (req, res) => {
+    const {link} = req.body;
+    const newName = "photo-" + Date.now().toString() + '.jpg';
+    await imagedownloader.image({
+        url: link,
+        dest: __dirname + '/uploads/' + newName
+    });
+    res.json(newName);
+});
+
+const picturesMiddleware = multer({dest: __dirname + '/uploads/'});
+app.post('/upload', picturesMiddleware.array('pictures', 10),async (req, res) => {
+    uploadedFiles = [];
+    for (let i = 0; i < req.files.length; i++) {
+        const {path, originalname} = req.files[i];
+        const parts = originalname.split('.');
+        const extension = parts[parts.length - 1];
+        const newPath = path + '.' + extension;
+        fs.renameSync(path, newPath);
+        uploadedFiles.push(newPath.replace(__dirname+'/uploads/', ''));
+    }
+    res.json(uploadedFiles);
+});
