@@ -43,21 +43,25 @@ export default function RoomsPage() {
         setPictures([...pictures, ...filenames]);
     }
 
-    async function addRoom() {
-        const {data} = await axios.post('/room', {
-            roomNumber,
-            hotelId,
-            pictures,
-            amenities,
-            roomCapacity,
-            extendable,
-            roomPrice,
-            roomView,
-            damaged
-        });
-        console.log(data);
-        navigate('/account/rooms/');
-
+    async function addRoom(ev) {
+        ev.preventDefault();
+        try {
+            await axios.post('/room', {
+                roomNumber,
+                hotelId,
+                pictures,
+                amenities,
+                roomCapacity,
+                extendable,
+                roomPrice,
+                roomView,
+                damaged
+            });
+            alert("Room added !");
+            navigate('/account/rooms/');
+        } catch (error) {
+            alert("A problem occured !");
+        }
     }
 
 

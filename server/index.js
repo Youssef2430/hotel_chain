@@ -348,3 +348,12 @@ app.post('/room', async (req, res) => {
         console.error(err.message);
     }
 });
+
+app.get('/room', async (req, res) => {
+    try {
+        const allRooms = await pool.query("SELECT * FROM rooms Natural Join hotels");
+        res.json(allRooms.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
