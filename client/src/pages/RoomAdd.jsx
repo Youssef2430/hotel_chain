@@ -1,9 +1,12 @@
 import axios from 'axios';
 import {useState, useEffect} from 'react';
 import Amenities from './Amenities';
+import { useNavigate } from 'react-router';
 
 export default function RoomsPage() {
 
+    const [hotels, setHotels] = useState([]);
+    const [hotelId, setHotelId] = useState("");
     const [roomNumber, setRoomNumber] = useState("");
     const [picLink, setPicLink] = useState([]);
     const [pictures, setPictures] = useState([]);
@@ -13,6 +16,14 @@ export default function RoomsPage() {
     const [roomPrice, setRoomPrice] = useState("");
     const [roomView, setRoomView] = useState("");
     const [damaged, setDamaged] = useState(false);
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        axios.get("/hotel").then((data) => {
+            setHotels(data.data);
+        });
+    }, []);
 
     async function addPictureByLink(ev) {
         ev.preventDefault();
@@ -32,9 +43,33 @@ export default function RoomsPage() {
         setPictures([...pictures, ...filenames]);
     }
 
+    async function addRoom() {
+        const {data} = await axios.post('/room', {
+            roomNumber,
+            hotelId,
+            pictures,
+            amenities,
+            roomCapacity,
+            extendable,
+            roomPrice,
+            roomView,
+            damaged
+        });
+        console.log(data);
+        navigate('/account/rooms/');
+
+    }
+
+
     return (
         <div>
-            <form>
+            <form onSubmit={addRoom}>
+                <h2 className='text-2xl mt-4'>Hotel</h2>
+                <p className='text-gray-500 text-sm'>To which hotel does this room belong to</p>
+                <select className='w-full border my-2 py-2 px-3 rounded-2xl' value={hotelId} onChange={ev => setHotelId(ev.target.value)}>
+                    <option value="">Select hotel</option>
+                    {hotels.map(hotel => <option key={hotel.hotel_id} value={hotel.hotel_id}>{hotel.hname}</option>)}
+                </select>
                 <h2 className='text-2xl mt-4'>Room Number</h2>
                 <p className='text-gray-500 text-sm'>Number for the room</p>
                 <input type="text" placeholder="Room Number"
@@ -52,12 +87,12 @@ export default function RoomsPage() {
                 </div>
                 <div className='mt-2 grid gap-2 grid-cols-3 md:grid-cols-4 lg:grid-cols-6'>
                     {pictures.length > 0 && pictures.map(pic => (
-                        <div>
-                            <img className="rounded-2xl" src={'http://localhost:6060/uploads/'+pic}/>
+                        <div className='h-32 flex' key={pic}>
+                            <img alt='room-img' className="rounded-2xl w-full object-cover" src={'http://localhost:6060/uploads/'+pic}/>
                         </div>
                     ))}
         
-                    <label className='cursor-pointer flex items-center gap-1 justify-center border bg-transparent rounded-2xl p-2 text-xl text-gray-600'>
+                    <label className='h-32 cursor-pointer flex items-center gap-1 justify-center border bg-transparent rounded-2xl p-2 text-xl text-gray-600'>
                         <input type="file" multiple className='hidden' onChange={uploadPicture}/>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />

@@ -327,3 +327,24 @@ app.post('/upload', picturesMiddleware.array('pictures', 10),async (req, res) =>
     }
     res.json(uploadedFiles);
 });
+
+app.post('/room', async (req, res) => {
+    try {
+        const { 
+            roomNumber,
+            hotelId,
+            pictures,
+            amenities,
+            roomCapacity,
+            extendable,
+            roomPrice,
+            roomView,
+            damaged } = req.body;
+        const newRoom = await pool.query("INSERT INTO rooms (room_number, hotel_id, view, price, capacity, extendable, amenities, damaged, pictures) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *", 
+        [roomNumber, hotelId, roomView, roomPrice, roomCapacity, extendable, amenities, damaged, pictures]);
+        // console.log(newCustomer.rows[0]);
+        res.json(newRoom.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
