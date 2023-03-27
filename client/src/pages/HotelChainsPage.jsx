@@ -17,7 +17,7 @@ export default function HotelChainsPage() {
                 <div className='py-6'>List of hotel chains</div>
                 <div className='px-4 py-6'>
                     {chains.length > 0 && chains.map(chain => {
-                        return <div className='bg-gray-200 border border-white py-1' key={chain.chain_id}>{chain.name}</div>
+                        return <div className='border py-1' key={chain.chain_id}>{chain.name}</div>
                     })}
                 </div>
                 <Link className="py-2 px-4 bg-primary text-white rounded-full" to="/account/hotel_chain/add_hotel_chain">Add a hotel chain</Link>

@@ -18,7 +18,7 @@ export default function HotelsPage() {
             <div className='py-6'>List of hotels</div>
             <div className='px-4 py-6'>
                 {hotels.length > 0 && hotels.map(hotel => {
-                    return <div className='bg-gray-200 border border-white py-1' key={hotel.hotel_id}>{hotel.hname}</div>
+                    return <div className='border py-1' key={hotel.hotel_id}>{hotel.hname}</div>
                 })}
             </div>
             <Link className="py-2 px-4 bg-primary text-white rounded-full" to="/account/hotel/add_hotel">Add a hotel</Link>
