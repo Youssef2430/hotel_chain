@@ -25,7 +25,7 @@ export default function RoomsPage() {
             </div>
             <div className='mt-4 mb-6 grid lg:grid-cols-2 sm:grid-cols-1 gap-2'>
                 {rooms.length > 0 && rooms.map(room => (
-                    <Link to={'/account/room/'+room.hname+room.room_number} className='flex cursor-pointer gap-4 bg-gray-200 p-4 rounded-2xl'>
+                    <Link to={'/account/rooms/'+room.hotel_id+"$"+room.room_number} key={room.hname+room.room_number} className='flex cursor-pointer gap-4 bg-gray-200 p-4 rounded-2xl'>
                         <div className='w-32 h-32 bg-gray-300'>
                             {room.pictures.length > 0 && 
                             (
@@ -46,7 +46,7 @@ export default function RoomsPage() {
                                 <div className='text-gray-800 text-sm'>Amenities: </div>
                                 <div className='flex text-gray-500 text-sm'>{room.amenities.map(item => (
                                     // console.log(item)
-                                <div> {item}&nbsp;</div>
+                                <div key={item}> {item}&nbsp;</div>
                                 ))}</div>
                             </div>
                             

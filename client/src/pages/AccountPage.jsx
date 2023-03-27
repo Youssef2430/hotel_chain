@@ -11,6 +11,7 @@ import HotelChainsPage from './HotelChainsPage.jsx';
 import HotelsPage from './HotelsPage.jsx';
 import RoomsPage from './RoomsPage.jsx';
 import RoomAdd from './RoomAdd.jsx';
+import RoomEdit from './RoomEdit.jsx';
 
 export default function AccountPage() {
     const {role, ready, user, setUser} = useContext(UserContext);
@@ -18,7 +19,7 @@ export default function AccountPage() {
 
 
 
-    let {subpage} = useParams();
+    let {subpage, subpage2} = useParams();
 
     if (subpage === undefined) {
        subpage = 'profile';
@@ -77,22 +78,24 @@ export default function AccountPage() {
                 Logged in as {user.fullname} ({user.email}) <br/>
                 <button onClick={logout} className='bg-primary py-2 px-4 rounded-full w-full my-6 text-white'>Logout</button>    
             </div>}
-            {subpage === 'hotel_chain' && 
+            {subpage === 'hotel_chain' && subpage2 === undefined &&
             <HotelChainsPage/>}
-            {subpage === 'add_hotel_chain' && 
+            {subpage2 === 'add_hotel_chain' && 
             <ChainAdd/>}
-            {subpage === 'hotel' && 
+            {subpage === 'hotel' && subpage2 === undefined &&
             <HotelsPage/>}
-            {subpage === 'add_hotel' && 
+            {subpage2 === 'add_hotel' && 
             <HotelAdd/>}
-            {subpage === 'employees' && 
+            {subpage === 'employees' && subpage2 === undefined &&
             <EmployeesPage/>}
-            {subpage === 'add_employee' && 
+            {subpage2 === 'add_employee' && 
             <EmployeeAdd/>}
-            {subpage === 'rooms' && 
+            {subpage === 'rooms' && subpage2 === undefined &&
             <RoomsPage/>}
-            {subpage === 'add_room' &&
+            {subpage2 === 'add_room' &&
             <RoomAdd/>}
+            {subpage === 'rooms' && (subpage2 !== 'add_room' && subpage2 !== undefined) &&
+            <RoomEdit/>}
         </div>
     );
     

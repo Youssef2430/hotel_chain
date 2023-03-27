@@ -21,7 +21,7 @@ export default function HotelsPage() {
                     return <div className='bg-gray-200 border border-white py-1' key={hotel.hotel_id}>{hotel.hname}</div>
                 })}
             </div>
-            <Link className="py-2 px-4 bg-primary text-white rounded-full" to="/account/hotel_chain/add_hotel">Add a hotel</Link>
+            <Link className="py-2 px-4 bg-primary text-white rounded-full" to="/account/hotel/add_hotel">Add a hotel</Link>
         </div>
     );
 }

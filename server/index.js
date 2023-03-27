@@ -357,3 +357,41 @@ app.get('/room', async (req, res) => {
         console.error(err.message);
     }
 } );
+
+app.post('/rooms/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        let parts = id.split('$');
+        let hotel_id = parts[0];
+        let room_num = parts[1];
+        const { 
+            roomNumber,
+            hotelId,
+            pictures,
+            amenities,
+            roomCapacity,
+            extendable,
+            roomPrice,
+            roomView,
+            damaged } = req.body;
+        const newRoom = await pool.query("UPDATE rooms SET room_number = $1, hotel_id = $2, view = $3, price = $4, capacity = $5, extendable = $6, amenities = $7, damaged = $8, pictures = $9 WHERE room_number = $10 and hotel_id = $11 RETURNING *", 
+        [roomNumber, hotelId, roomView, roomPrice, roomCapacity, extendable, amenities, damaged, pictures, room_num, hotel_id]);
+        // console.log(newCustomer.rows[0]);
+        res.json(newRoom.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
+
+app.get('/rooms/:id', async (req, res) => { 
+    try {
+        const { id } = req.params;
+        let parts = id.split('$');
+        let hotel_id = parts[0];
+        let room_num = parts[1];
+        const allRooms = await pool.query("SELECT * FROM rooms Natural Join hotels WHERE hotel_id = $1 and room_number = $2", [hotel_id, room_num]);
+        res.json(allRooms.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
