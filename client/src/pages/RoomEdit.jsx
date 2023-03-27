@@ -8,7 +8,6 @@ export default function RoomEdit() {
 
     let {subpage2} = useParams();
     const [hotels, setHotels] = useState([]);
-    const [room, setRoom] = useState(null);
     const [hotelId, setHotelId] = useState("");
     const [roomNumber, setRoomNumber] = useState("");
     const [picLink, setPicLink] = useState([]);
@@ -25,7 +24,6 @@ export default function RoomEdit() {
     useEffect(() => {
         axios.get('/rooms/'+subpage2).then(({data}) => {
             // console.log(data);
-            setRoom(data);
             setRoomNumber(data.room_number);
             setHotelId(data.hotel_id);
             setPictures(data.pictures);
@@ -35,7 +33,6 @@ export default function RoomEdit() {
             setRoomPrice(data.price);
             setRoomView(data.view);
             setDamaged(data.damaged);
-            console.log(data);
         } );
 
         axios.get("/hotel").then((data) => {
