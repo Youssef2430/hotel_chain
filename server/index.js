@@ -261,7 +261,7 @@ app.get('/hotel_chain', async (req, res) => {
 app.post("/hotel", async (req, res) => {
     try {
         const { hotel_name, address, chainid, email, phone } = req.body;
-        const newHotel = await pool.query("INSERT INTO hotels (hname, address, chain_id, phone_number, email, rating) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *", [hotel_name, address, chainid, [phone], email, 1]);
+        const newHotel = await pool.query("INSERT INTO hotels (hname, address, chain_id, phone_number, email, rating) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *", [hotel_name, address, chainid, [phone], email, 5]);
         // console.log(newCustomer.rows[0]);
         res.json(newHotel.rows[0]);
     } catch (err) {
