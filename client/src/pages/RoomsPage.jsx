@@ -23,7 +23,7 @@ export default function RoomsPage() {
         }
         
 
-    }, []);
+    }, [role, user.sin]);
     return (
         <div>
             <div className='text-center'>

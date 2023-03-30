@@ -21,7 +21,7 @@ export default function ReservationsPage() {
             } );
         }
     
-    }, []);
+    }, [role, user.sin]);
 
     return(
         <div>
