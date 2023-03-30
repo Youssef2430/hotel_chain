@@ -395,3 +395,41 @@ app.get('/rooms/:id', async (req, res) => {
         console.error(err.message);
     }
 } );
+
+app.post('/reservation', async (req, res) => {
+    try {
+        const {chain_id, hotel_id, room_number,customerEmail, employeeId, checkIn, checkOut} = req.body;
+        const customer = await pool.query("SELECT * FROM customers WHERE email = $1", [customerEmail]);
+        // console.log(employeeId);
+        let status = '';
+        let newReservation = '';
+        if(employeeId === '' || employeeId === null || employeeId === undefined){
+            status = 'booked';
+            newReservation = await pool.query("INSERT INTO reservation (chain_id, hotel_id, room_number, customer_id, check_in, check_out, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *", 
+            [chain_id, hotel_id, room_number, customer.rows[0].customer_id, checkIn, checkOut, status]);
+        }else {
+            status = 'rented';
+            const employee = await pool.query("SELECT * FROM employees WHERE sin = $1", [employeeId]);
+            newReservation = await pool.query("INSERT INTO reservation (chain_id, hotel_id, room_number, customer_id, employee_id, check_in, check_out, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *", 
+            [chain_id, hotel_id, room_number, customer.rows[0].customer_id, employee.rows[0].employee_id, checkIn, checkOut, status]);
+        }
+        res.json(newReservation.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.json(err.message);
+    }
+
+});
+
+app.get('/reservation/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        let parts = id.split('$');
+        let hotel_id = parts[0];
+        let room_num = parts[1];
+        const allReservations = await pool.query("SELECT * FROM reservation WHERE hotel_id = $1 and room_number = $2", [hotel_id, room_num]);
+        res.json(allReservations.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );

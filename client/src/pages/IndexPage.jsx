@@ -24,7 +24,7 @@ export default function IndexPage() {
                     let city = parts[1];
                     let country = parts[3];
                     return (
-                        <Link to={"/"+room.hotel_id+"$"+room.room_number} className="cursor-pointer">
+                        <Link to={"/"+room.hotel_id+"$"+room.room_number} className="cursor-pointer" key={room.hotel_id+"$"+room.room_number}>
                             <div className="bg-gray-500 rounded-2xl flex">
                                 {room.pictures?.[0] &&
                                     <img className="rounded-2xl object-cover aspect-square" src={'http://localhost:6060/uploads/'+room.pictures[0]} alt="room" />

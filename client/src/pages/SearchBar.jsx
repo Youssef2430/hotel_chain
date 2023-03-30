@@ -6,14 +6,14 @@ export default function SearchBar() {
     const [hotelChains, setHotelChains] = useState([]);
     const [hotels, setHotels] = useState([]);
     const [regions, setRegions] = useState([]);
-    const [hotel_chain, setHotelChain] = useState([]);
-    const [hotel, setHotel] = useState([]);
-    const [region, setRegion] = useState([]);
-    const [price, setPrice] = useState([]);
-    const [rating, setRating] = useState([]);
-    const [numRooms, setNumRooms] = useState([]);
-    const [checkIn, setCheckIn] = useState([]);
-    const [checkOut, setCheckOut] = useState([]);
+    const [hotel_chain, setHotelChain] = useState('');
+    const [hotel, setHotel] = useState('');
+    const [region, setRegion] = useState('');
+    const [price, setPrice] = useState('');
+    const [rating, setRating] = useState('');
+    const [numRooms, setNumRooms] = useState('');
+    const [checkIn, setCheckIn] = useState('');
+    const [checkOut, setCheckOut] = useState('');
 
     async function search(ev) {
         ev.preventDefault();
@@ -41,18 +41,18 @@ export default function SearchBar() {
         <form className="m-8" onSubmit={search}>
             <div>
                 <select className='w-full border my-2 py-2 px-3 rounded-2xl' value={hotel_chain} onChange={ev => setHotelChain(ev.target.value)}>
-                    <option value="0">Select hotel chain</option>
+                    <option value="">Select hotel chain</option>
                     {hotelChains.map(hotelChain => <option key={hotelChain.chain_id} value={hotelChain.chain_id}>{hotelChain.name}</option>)}
                 </select>
             </div>
             <div className="flex gap-3">
                 <div className="w-full flex gap-3">
                     <select className='w-full border my-2 py-2 px-3 rounded-2xl' value={hotel} onChange={ev => setHotel(ev.target.value)}>
-                        <option value="0">Select hotel</option>
+                        <option value="">Select hotel</option>
                         {hotels.map(hotel => <option key={hotel.hotel_id} value={hotel.hotel_id}>{hotel.hname}</option>)}
                     </select>
                     <select className='w-full border my-2 py-2 px-3 rounded-2xl' value={region} onChange={ev => setRegion(ev.target.value)}>
-                        <option value="0">Region</option>
+                        <option value="">Region</option>
                         {regions.map(reg => <option key={reg} value={reg}>{reg}</option>)}
                     </select>
                     
