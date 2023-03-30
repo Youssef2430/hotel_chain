@@ -168,7 +168,7 @@ app.get("/role", async (req, res) => {
                         "SELECT * FROM employees WHERE sin = $1",
                         [decoded.id]
                     );
-                    res.json(employee.rows[0].role);
+                    res.json(employee.rows[0]);
                 }else{
                     res.json('customer');
                 }
@@ -194,7 +194,7 @@ app.post('/employee_admin', async (req, res) => {
         const newPerson = await pool.query("INSERT INTO person (fullname, email) VALUES ($1, $2) RETURNING *", [name, email]);
         // console.log(newPerson.rows[0]);
         const newEmployee = await pool.query(
-            "INSERT INTO employees (sin, email, password, role, address) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            "INSERT INTO employees (sin, email, password, role, employee_address) VALUES ($1, $2, $3, $4, $5) RETURNING *",
             [newPerson.rows[0].sin, email, password_encrypt, role, [address]]
         );
         // console.log(newCustomer.rows[0]);
@@ -287,6 +287,26 @@ app.get('/employee', async (req, res) => {
     }
 });
 
+app.get('/employee/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const allEmployees = await pool.query("SELECT * FROM employees natural join hotels WHERE sin = $1", [id]);
+        res.json(allEmployees.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.get('/customer/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const allEmployees = await pool.query("SELECT * FROM customers WHERE sin = $1", [id]);
+        res.json(allEmployees.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
 app.post('/employee', async (req, res) => {
     try {
         const { name, email, address, password, role, hotelId } = req.body;
@@ -294,7 +314,7 @@ app.post('/employee', async (req, res) => {
         const newPerson = await pool.query("INSERT INTO person (fullname, email) VALUES ($1, $2) RETURNING *", [name, email]);
         // console.log(newPerson.rows[0]);
         const newEmployee = await pool.query(
-            "INSERT INTO employees (sin, email, password, role, address, hotel_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+            "INSERT INTO employees (sin, email, password, role, employee_address, hotel_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
             [newPerson.rows[0].sin, email, password_encrypt, role, [address], hotelId]
         );
         // console.log(newCustomer.rows[0]);
@@ -357,6 +377,19 @@ app.get('/room', async (req, res) => {
         console.error(err.message);
     }
 } );
+
+app.get('/room/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const employee = await pool.query("SELECT * FROM employees WHERE sin = $1", [id]);
+        const allRooms = await pool.query("SELECT * FROM rooms Natural Join hotels where hotel_id = $1", [employee.rows[0].hotel_id]);
+        res.json(allRooms.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
+
+
 
 app.post('/rooms/:id', async (req, res) => {
     try {
@@ -437,6 +470,18 @@ app.get('/reservation/:id', async (req, res) => {
 app.get('/reservations', async (req, res) => {
     try {
         const allReservations = await pool.query("SELECT * FROM reservation Join hotels on reservation.hotel_id = hotels.hotel_id Join rooms on (reservation.room_number, reservation.hotel_id) = (rooms.room_number, rooms.hotel_id) Join customers on reservation.customer_id = customers.customer_id WHERE status = 'rented' or status = 'booked'");
+        res.json(allReservations.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
+
+app.get('/reservations/employee/:id', async (req, res) => {
+    try {
+        const {id} = req.params;
+        const employee = await pool.query("SELECT * FROM employees WHERE sin = $1", [id]);
+        // console.log(employee.rows[0].hotel_id);
+        const allReservations = await pool.query("SELECT * FROM reservation Join hotels on reservation.hotel_id = hotels.hotel_id Join rooms on (reservation.room_number, reservation.hotel_id) = (rooms.room_number, rooms.hotel_id) Join customers on reservation.customer_id = customers.customer_id WHERE (status = 'rented' or status = 'booked') AND (reservation.hotel_id = $1)", [employee.rows[0].hotel_id]);
         res.json(allReservations.rows);
     } catch (err) {
         console.error(err.message);

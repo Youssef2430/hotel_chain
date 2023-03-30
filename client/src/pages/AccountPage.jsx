@@ -18,20 +18,8 @@ import ReservationPage from './ReservationPage.jsx';
 export default function AccountPage() {
     const {role, ready, user, setUser} = useContext(UserContext);
     const [redirect, setRedirect] = useState(null);
-
-
-
     let {subpage, subpage2} = useParams();
 
-    if (subpage === undefined) {
-       subpage = 'profile';
-    }
-
-    async function logout() {
-        await axios.post('/logout');
-        setUser(null);
-        setRedirect('/');
-    }
 
     if(redirect) {
         return <Navigate to={redirect} />
@@ -43,6 +31,16 @@ export default function AccountPage() {
     
     if(ready && !user) {
         return <Navigate to={'/login'}></Navigate>
+    }
+
+    if (subpage === undefined) {
+       subpage = 'profile';
+    }
+
+    async function logout() {
+        await axios.post('/logout');
+        setUser(null);
+        setRedirect('/');
     }
 
     function linkClasses(type=null){

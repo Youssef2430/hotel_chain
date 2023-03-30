@@ -1,16 +1,25 @@
 import axios from 'axios';
 import {Link} from 'react-router-dom';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useContext} from 'react';
+import {UserContext} from '../UserContext.jsx';
 
 export default function ReservationsPage() {
 
+    const {role, user} = useContext(UserContext);
     const [reservations, setReservations] = useState([]);
 
     useEffect(() => {
-        axios.get('/reservations').then(({data}) => {
-            console.log(data);
-            setReservations(data);
-        } );
+        if(role === 'employee') {
+            axios.get('/reservations/employee/'+user.sin).then(({data}) => {
+                console.log(data);
+                setReservations(data);
+            } );
+        }else{
+            axios.get('/reservations').then(({data}) => {
+                console.log(data);
+                setReservations(data);
+            } );
+        }
     
     }, []);
 

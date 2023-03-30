@@ -1,16 +1,27 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {Link} from 'react-router-dom';
+import {UserContext} from '../UserContext.jsx';
 
 export default function RoomsPage() {
 
+    const {role, user} = useContext(UserContext);
     const [rooms, setRooms] = useState([]);
 
+
     useEffect(() => {
-        axios.get('/room').then(({data}) => {
-            // console.log(data);
-            setRooms(data);
-        } );
+        if(role === 'employee'){
+            axios.get('/room/'+user.sin).then(({data}) => {
+                // console.log(data);
+                setRooms(data);
+            } );
+        }else{
+            axios.get('/room').then(({data}) => {
+                // console.log(data);
+                setRooms(data);
+            } );
+        }
+        
 
     }, []);
     return (
