@@ -32,7 +32,7 @@ export default function RoomPage() {
         }else{
             setEmployeeId(user.sin);
         }
-    }, []);
+    }, [ room, user.email, user.sin, role]);
 
     function checkCheckIn(date) {
         for(let reservation of reservations) {

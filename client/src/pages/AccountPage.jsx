@@ -12,6 +12,8 @@ import HotelsPage from './HotelsPage.jsx';
 import RoomsPage from './RoomsPage.jsx';
 import RoomAdd from './RoomAdd.jsx';
 import RoomEdit from './RoomEdit.jsx';
+import ReservationsPage from './ReservationsPage.jsx';
+import ReservationPage from './ReservationPage.jsx';
 
 export default function AccountPage() {
     const {role, ready, user, setUser} = useContext(UserContext);
@@ -145,6 +147,10 @@ export default function AccountPage() {
             <RoomAdd/>}
             {subpage === 'rooms' && (subpage2 !== 'add_room' && subpage2 !== undefined) &&
             <RoomEdit/>}
+            {subpage === 'reservations' && subpage2 === undefined &&
+            <ReservationsPage/>}
+            {subpage === 'reservations' && subpage2 &&
+            <ReservationPage/>}
         </div>
     );
     

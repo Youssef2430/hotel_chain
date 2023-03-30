@@ -92,7 +92,7 @@ app.post('/customer', async (req, res) => {
         const newPerson = await pool.query("INSERT INTO person (fullname, email) VALUES ($1, $2) RETURNING *", [name, email]);
         // console.log(newPerson.rows[0]);
         const newCustomer = await pool.query(
-            "INSERT INTO customers (sin, email, password, phone_number, address) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            "INSERT INTO customers (sin, email, password, phone_number, customer_address) VALUES ($1, $2, $3, $4, $5) RETURNING *",
             [newPerson.rows[0].sin, email, password_encrypt, [phone], [address]]
         );
         // console.log(newCustomer.rows[0]);
@@ -427,9 +427,45 @@ app.get('/reservation/:id', async (req, res) => {
         let parts = id.split('$');
         let hotel_id = parts[0];
         let room_num = parts[1];
-        const allReservations = await pool.query("SELECT * FROM reservation WHERE hotel_id = $1 and room_number = $2", [hotel_id, room_num]);
+        const allReservations = await pool.query("SELECT * FROM reservation Natural Join rooms Natural Join hotels Natural join customers WHERE hotel_id = $1 and room_number = $2", [hotel_id, room_num]);
         res.json(allReservations.rows);
     } catch (err) {
         console.error(err.message);
     }
 } );
+
+app.get('/reservations', async (req, res) => {
+    try {
+        const allReservations = await pool.query("SELECT * FROM reservation Join hotels on reservation.hotel_id = hotels.hotel_id Join rooms on (reservation.room_number, reservation.hotel_id) = (rooms.room_number, rooms.hotel_id) Join customers on reservation.customer_id = customers.customer_id WHERE status = 'rented' or status = 'booked'");
+        res.json(allReservations.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
+
+app.get('/single-reservations/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const reservation_id = parseInt(id);
+        const allReservations = await pool.query("SELECT * FROM reservation Join hotels on reservation.hotel_id = hotels.hotel_id Join rooms on (reservation.room_number, reservation.hotel_id) = (rooms.room_number, rooms.hotel_id) Join customers on reservation.customer_id = customers.customer_id WHERE reservation_id = $1", [reservation_id]);
+        res.json(allReservations.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
+
+app.post('/confirm-reservation/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const {status} = req.body;
+        const reservation_id = parseInt(id);
+        if(id === undefined || reservation_id === null || reservation_id === undefined){
+            res.json('Invalid reservation id');
+        }else{
+            const confirmReservation = await pool.query("UPDATE reservation SET status = $1 WHERE reservation_id = $2 RETURNING *", [status, reservation_id]);
+            res.json(confirmReservation.rows[0]);
+        }
+    } catch (err) {
+        console.error(err.message);
+    }
+});
