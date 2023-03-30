@@ -26,7 +26,6 @@ export default function RoomPage() {
             setReservations(data.data);
             console.log(data.data);
         });
-        console.log(user.sin);
         if(role === 'customer') {
             setCustomerEmail(user.email);
         }else{

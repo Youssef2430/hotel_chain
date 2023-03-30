@@ -7,7 +7,6 @@ export function UserContextProvider({ children }) {
     const [user, setUser] = useState(null);
     const [ready, setReady] = useState(false);
     const [role, setRole] = useState(null);
-    const [account, setAccount] = useState(null);
     useEffect(() => {
         if(!user) {
             axios.get("/profile").then(({data}) => {
@@ -15,13 +14,12 @@ export function UserContextProvider({ children }) {
                 setReady(true);
             });
             axios.get("/role").then((data) => {
-                setRole(data.data.role);
-                setAccount(data.data);
+                setRole(data.data);
             });   
         }
     }, [user]);
     return (
-        <UserContext.Provider value={{user, setUser, ready,setReady, role, account}}>
+        <UserContext.Provider value={{user, setUser, ready,setReady, role}}>
             {children}
         </UserContext.Provider>
     );
