@@ -548,3 +548,31 @@ app.get('/search', async (req, res) => {
         console.error(err.message);
     }
 } );
+
+app.get('/bookings/:email', async (req, res) => {
+    try {
+        const { email } = req.params;
+        const customer = await pool.query("SELECT * FROM customers WHERE email = $1", [email]);
+        const allReservations = await pool.query("SELECT * FROM reservation Join hotels on reservation.hotel_id = hotels.hotel_id Join rooms on (reservation.room_number, reservation.hotel_id) = (rooms.room_number, rooms.hotel_id) Join customers on reservation.customer_id = customers.customer_id WHERE reservation.customer_id = $1", [customer.rows[0].customer_id]);
+        res.json(allReservations.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
+
+app.post('/rating', async (req, res) => {
+    try {
+        const {reservation_id, rating} = req.body;
+        const reservation = await pool.query("SELECT * FROM reservation WHERE reservation_id = $1", [reservation_id]);
+        const hotel_id = reservation.rows[0].hotel_id;
+        const updateReservation = await pool.query("UPDATE reservation SET rated = 'true' WHERE reservation_id = $1 RETURNING *", [reservation_id]);
+        const hotel = await pool.query("SELECT * FROM hotels WHERE hotel_id = $1", [hotel_id]);
+        const newRating = Math.ceil(((hotel.rows[0].rating*hotel.rows[0].count_rating) + parseInt(rating)) / (hotel.rows[0].count_rating + 1));
+        // console.log(newRating);
+        const updateRating = await pool.query("UPDATE hotels SET rating = $1, count_rating = $2 WHERE hotel_id = $3 RETURNING *", [newRating, (hotel.rows[0].count_rating + 1), hotel_id]);
+        res.json(updateRating.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
