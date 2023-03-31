@@ -6,10 +6,11 @@ import SearchBar from "./SearchBar";
 export default function IndexPage() {
 
     const [rooms, setRooms] = useState([]);
+    const [searchResults, setSearchResults] = useState([]);
 
     useEffect(() => {
         axios.get('/room').then(response => {
-            setRooms(response.data);
+            setSearchResults(response.data);
             // console.log(response.data);
         });
     }, []);
@@ -17,9 +18,9 @@ export default function IndexPage() {
 
     return (
         <div>
-            <SearchBar/>
+            <SearchBar setSearchResults = {setSearchResults}/>
             <div className="mt-8 gap-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {rooms.length > 0 && rooms.map(room => {
+                {searchResults.length > 0 && searchResults.map(room => {
                     let parts = room.address.split(', ');
                     let city = parts[1];
                     let country = parts[3];

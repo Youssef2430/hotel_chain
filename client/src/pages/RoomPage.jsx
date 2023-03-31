@@ -26,12 +26,14 @@ export default function RoomPage() {
             setReservations(data.data);
             console.log(data.data);
         });
-        if(role === 'customer') {
-            setCustomerEmail(user.email);
-        }else{
-            setEmployeeId(user.sin);
+        if(user){
+            if(role === 'customer') {
+                setCustomerEmail(user.email);
+            }else{
+                setEmployeeId(user.sin);
+            }
         }
-    }, [ room, user.email, user.sin, role]);
+    }, []);
 
     function checkCheckIn(date) {
         for(let reservation of reservations) {
@@ -64,6 +66,9 @@ export default function RoomPage() {
 
     async function bookRoom() {
         // console.log(user);
+        if(!user) {
+            alert('Please login to book a room');
+            return;}
         if(checkIn === '' || checkOut === '') {
             alert('Please select check-in and check-out dates');
             return;
@@ -179,7 +184,7 @@ export default function RoomPage() {
                         
                         </h2>
                         <div>
-                            {role !== 'customer' && 
+                            {user && role !== 'customer' && 
                             <input type="email" placeholder="customer@email.com" 
                             value={customerEmail} 
                             onChange={ev => setCustomerEmail(ev.target.value)}/>}

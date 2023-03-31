@@ -513,3 +513,38 @@ app.post('/confirm-reservation/:id', async (req, res) => {
         console.error(err.message);
     }
 });
+
+app.get('/search', async (req, res) => {
+    try {
+        const {hotel_chain_id, hotel_id, city, checkIn, checkOut, num_of_rooms, price, rating} = req.query;
+        console.log(hotel_chain_id, hotel_id, city, checkIn, checkOut, num_of_rooms, price, rating);
+        let query1 = [];
+        if(hotel_chain_id !== '') query1.push(`chain_id = ${hotel_chain_id}`);
+        if(hotel_id !== '') query1.push(`hotel_id = ${hotel_id}`);
+        if(city !== '') query1.push(`(address like '%${city}%')`);
+        if(price !== '') query1.push(`price <= ${price}`);
+        if(rating !== '') query1.push(`rating >= ${rating}`);
+        let query2 = '';
+        if(checkIn !== '' && checkOut !== '') query2 = `WHERE (rooms_1.hotel_id, rooms_1.room_number) NOT IN
+        (SELECT hotel_id, room_number from reservation 
+        WHERE (check_in <= date('${checkOut}') and check_in >= date('${checkIn}')) or (check_out <= date('${checkOut}') and check_out >= date('${checkIn}')))`;
+        let query3 = '';
+        if(num_of_rooms !== '') query3 = `where num_of_rooms >= ${num_of_rooms}`;
+        let query = ''
+        if(query1.length > 0) query = `WHERE ${query1.join(' and ')}`;
+        let finalQuery = `SELECT * from 
+        (SELECT * from rooms 
+        natural join hotels
+        ${query})as rooms_1
+        Natural join 
+        (select * from (select hotel_id, count(room_number) as num_of_rooms from rooms
+        group by hotel_id) as rooms_2 ${query3}) as rooms_3
+        ${query2}`;
+        // console.log(finalQuery);
+
+        const allReservations = await pool.query(finalQuery);
+        res.json(allReservations.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );

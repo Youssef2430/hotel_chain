@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import axios from "axios";
 
-export default function SearchBar() {
+export default function SearchBar(props) {
 
     const [hotelChains, setHotelChains] = useState([]);
     const [hotels, setHotels] = useState([]);
@@ -15,9 +15,55 @@ export default function SearchBar() {
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
 
+    async function setVariables(ev){
+        ev.preventDefault();
+        let response = null;
+        if (ev.target.id === "chains") {
+            setHotelChain(ev.target.value);
+            response = await axios.get("/search", {params : {hotel_chain_id: ev.target.value, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating}});
+            props.setSearchResults(response.data);
+            console.log(response.data);
+        } else if (ev.target.id === "hotels") {
+            setHotel(ev.target.value);
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: ev.target.value, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating}});
+            props.setSearchResults(response.data);
+            console.log(response.data);
+        } else if (ev.target.id === "regions") {
+            setRegion(ev.target.value);
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: ev.target.value, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating}});
+            props.setSearchResults(response.data);
+            console.log(response.data);
+        } else if (ev.target.id === "price") {
+            setPrice(ev.target.value);
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:ev.target.value, rating: rating}});
+            props.setSearchResults(response.data);
+            console.log(response.data);
+        } else if (ev.target.id === "rating") {
+            setRating(ev.target.value);
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: ev.target.value}});
+            props.setSearchResults(response.data);
+            console.log(response.data);
+        } else if (ev.target.id === "numRooms") {
+            setNumRooms(ev.target.value);
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: ev.target.value, price:price, rating: rating}});
+            props.setSearchResults(response.data);
+            console.log(response.data);
+        } else if (ev.target.id === "checkIn") {
+            setCheckIn(ev.target.value);
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: ev.target.value, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating}});
+            props.setSearchResults(response.data);
+            console.log(response.data);
+        } else if (ev.target.id === "checkOut") {
+            setCheckOut(ev.target.value);
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: ev.target.value, num_of_rooms: numRooms, price:price, rating: rating}});
+            props.setSearchResults(response.data);
+            console.log(response.data);
+        }
+    }
+
     async function search(ev) {
         ev.preventDefault();
-        console.log(checkIn, checkOut);
+        setVariables(ev);
     }
 
     useEffect(() => {
@@ -38,20 +84,20 @@ export default function SearchBar() {
 
 
     return (
-        <form className="m-8" onSubmit={search}>
+        <form className="m-8">
             <div>
-                <select className='w-full border my-2 py-2 px-3 rounded-2xl' value={hotel_chain} onChange={ev => setHotelChain(ev.target.value)}>
+                <select className='w-full border my-2 py-2 px-3 rounded-2xl' id="chains" value={hotel_chain} onChange={search}>
                     <option value="">Select hotel chain</option>
                     {hotelChains.map(hotelChain => <option key={hotelChain.chain_id} value={hotelChain.chain_id}>{hotelChain.name}</option>)}
                 </select>
             </div>
             <div className="flex gap-3">
                 <div className="w-full flex gap-3">
-                    <select className='w-full border my-2 py-2 px-3 rounded-2xl' value={hotel} onChange={ev => setHotel(ev.target.value)}>
+                    <select className='w-full border my-2 py-2 px-3 rounded-2xl' id="hotels" value={hotel} onChange={search}>
                         <option value="">Select hotel</option>
                         {hotels.map(hotel => <option key={hotel.hotel_id} value={hotel.hotel_id}>{hotel.hname}</option>)}
                     </select>
-                    <select className='w-full border my-2 py-2 px-3 rounded-2xl' value={region} onChange={ev => setRegion(ev.target.value)}>
+                    <select className='w-full border my-2 py-2 px-3 rounded-2xl' id="regions" value={region} onChange={search}>
                         <option value="">Region</option>
                         {regions.map(reg => <option key={reg} value={reg}>{reg}</option>)}
                     </select>
@@ -60,17 +106,17 @@ export default function SearchBar() {
                 
                 
                 <div className="w-full flex gap-2">
-                    <input className="w-min" type="number" placeholder="Num of rooms"
+                    <input className="w-min" type="number" id="numRooms" placeholder="Num of rooms"
                         value={numRooms}
-                        onChange={ev => setNumRooms(ev.target.value)}
+                        onChange={search}
                     />
-                    <input type="number" placeholder="Price"
+                    <input type="number" id="price" placeholder="Price"
                         value={price}
-                        onChange={ev => setPrice(ev.target.value)}
+                        onChange={search}
                     />
-                    <input type="number" placeholder="Rating" min={1} max={5}
+                    <input type="number" id="rating" placeholder="Rating" min={1} max={5}
                         value={rating}
-                        onChange={ev => setRating(ev.target.value)}
+                        onChange={search}
                     />
                 </div>
                 
@@ -80,15 +126,17 @@ export default function SearchBar() {
                     <div>   
                         <p className="italic text-sm">Check In</p>
                         <input 
+                        id="checkIn"
                         value={checkIn}
-                        onChange={ev => setCheckIn(ev.target.value)}
+                        onChange={search}
                         className="w-full border my-2 py-2 px-3 rounded-2xl" type = "date" name = "date"/>  
                     </div> 
                     <div>   
                         <p className="italic text-sm">Check Out</p>
                         <input 
+                        id="checkOut"
                         value={checkOut}
-                        onChange={ev => setCheckOut(ev.target.value)}
+                        onChange={search}
                         className="w-full border my-2 py-2 px-3 rounded-2xl" type = "date" name = "date"/>  
                     </div> 
 
