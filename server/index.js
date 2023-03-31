@@ -576,3 +576,26 @@ app.post('/rating', async (req, res) => {
     }
 });
 
+app.get('/rooms_capacity', async (req, res) => {
+    try {
+        const {hotel_id} = req.query;
+        const createView = await pool.query(`CREATE or REPLACE view rooms_capacity as SELECT room_number, capacity from rooms WHERE hotel_id = ${hotel_id}`);
+        const view = await pool.query(`SELECT * FROM rooms_capacity`);
+        res.json(view.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+}  );
+
+app.get('/rooms_per_area', async (req, res) => {
+    try {
+        const createView = await pool.query(`CREATE or REPLACE view rooms_per_area as
+        SELECT SPLIT_PART(address, ', ', 2) as area, count(room_number) 
+        from hotels natural join rooms
+        group by area`);
+        const view = await pool.query(`SELECT * FROM rooms_per_area`);
+        res.json(view.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+}  );

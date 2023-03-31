@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from "axios";
+import { useNavigate } from 'react-router';
 
 export default function SearchBar(props) {
 
@@ -14,6 +15,7 @@ export default function SearchBar(props) {
     const [numRooms, setNumRooms] = useState('');
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
+    const navigate = useNavigate();
 
     async function setVariables(ev){
         ev.preventDefault();
@@ -82,9 +84,14 @@ export default function SearchBar(props) {
         });
     });
 
+    function goToViews(ev){
+        ev.preventDefault();
+        navigate("/views");
+    }
+
 
     return (
-        <form className="m-8">
+        <form className="m-8" onSubmit={goToViews}>
             <div>
                 <select className='w-full border my-2 py-2 px-3 rounded-2xl' id="chains" value={hotel_chain} onChange={search}>
                     <option value="">Select hotel chain</option>
@@ -144,7 +151,7 @@ export default function SearchBar(props) {
                     <script src ="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
                 </div>
                 <div>
-                    <button className="w-full h-15 text-white" type="submit">Search</button>
+                    <button className="w-full h-15 text-white" type="submit">Go to views</button>
                 </div>
             </div>
             
