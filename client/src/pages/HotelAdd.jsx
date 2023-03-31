@@ -14,6 +14,8 @@ export default function HotelAdd() {
     const [region, setRegion] = useState("");
     const [city, setCity] = useState("");
     const [postalCode, setPostalCode] = useState("");
+    const [country, setCountry] = useState("");
+    const [category, setCategory] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,8 +27,8 @@ export default function HotelAdd() {
     async function handleAddHotel(ev) {
         ev.preventDefault();
         try {
-            let address = streetNumber + " " + streetName + ", " + city + ", " + region + ", " + postalCode;
-            const response = await axios.post("/hotel", { hotel_name, address, phone, email, chainid });
+            let address = streetNumber + " " + streetName + ", " + city + ", " + region + ", " + postalCode + ", " + country;
+            const response = await axios.post("/hotel", { hotel_name, address, phone, email, chainid, category });
             if(typeof response.data === "string") {
                 alert(response.data);
                 return;
@@ -58,6 +60,12 @@ export default function HotelAdd() {
                     <input type="tel" placeholder="Phone number" 
                     value={phone} 
                     onChange={ev => setPhone(ev.target.value)}/>
+                    <select className='w-full border my-2 py-2 px-3 rounded-2xl' onChange={e=>setCategory(e.target.value)}>
+                        <option value="">Select a category</option>
+                        <option value="Luxurious">Luxurious</option>
+                        <option value="Comfortable">Comfortable</option>
+                        <option value="Economic">Economic</option>
+                    </select>
                     <div className="flex gap-1 justify-around">
                         <div className="w-{1/8}" >
                         <input type="text" placeholder="Street number" 
@@ -78,8 +86,11 @@ export default function HotelAdd() {
                     <input type="text" placeholder="Postal code" 
                     value={postalCode} 
                     onChange={ev => setPostalCode(ev.target.value)}/>
+                    <input type="text" placeholder="Country" 
+                    value={country} 
+                    onChange={ev => setCountry(ev.target.value)}/>
                     </div>
-                    <button className='text-white' type="submit">Add Chain</button>
+                    <button className='text-white' type="submit">Add Hotel</button>
                 </form>
             </div>
     );
