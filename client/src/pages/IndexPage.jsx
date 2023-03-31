@@ -5,7 +5,6 @@ import SearchBar from "./SearchBar";
 
 export default function IndexPage() {
 
-    const [rooms, setRooms] = useState([]);
     const [searchResults, setSearchResults] = useState([]);
 
     useEffect(() => {

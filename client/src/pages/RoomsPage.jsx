@@ -59,8 +59,7 @@ export default function RoomsPage() {
                                     // console.log(item)
                                 <div key={item}> {item}&nbsp;</div>
                                 ))}</div>
-                            </div>
-                            
+                            </div>                         
                         </div>
 
                     </Link>

@@ -517,7 +517,7 @@ app.post('/confirm-reservation/:id', async (req, res) => {
 app.get('/search', async (req, res) => {
     try {
         const {hotel_chain_id, hotel_id, city, checkIn, checkOut, num_of_rooms, price, rating} = req.query;
-        console.log(hotel_chain_id, hotel_id, city, checkIn, checkOut, num_of_rooms, price, rating);
+        // console.log(hotel_chain_id, hotel_id, city, checkIn, checkOut, num_of_rooms, price, rating);
         let query1 = [];
         if(hotel_chain_id !== '') query1.push(`chain_id = ${hotel_chain_id}`);
         if(hotel_id !== '') query1.push(`hotel_id = ${hotel_id}`);
@@ -599,3 +599,45 @@ app.get('/rooms_per_area', async (req, res) => {
         console.error(err.message);
     }
 }  );
+
+app.delete('/chain/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteChain = await pool.query("DELETE FROM chains WHERE chain_id = $1", [id]);
+        const newChain = await pool.query("SELECT * FROM chains");
+        res.json(newChain.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
+
+app.delete('/hotel/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteHotel = await pool.query("DELETE FROM hotels WHERE hotel_id = $1", [id]);
+        const newHotel = await pool.query("SELECT * FROM hotels");
+        res.json(newHotel.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
+
+app.delete('/room/:hotel_id/:room_number', async (req, res) => {
+    try {
+        const { hotel_id, room_number } = req.params;
+        const deleteRoom = await pool.query("DELETE FROM rooms WHERE room_number = $1 AND hotel_id = $2", [room_number, hotel_id]);
+        res.json("Room Deleted");
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
+
+app.put('/change_employee_hotel', async (req, res) => {
+    try {
+        const {employee_id, hotel_id} = req.body;
+        const updateEmployee = await pool.query("UPDATE employees SET hotel_id = $1 WHERE employee_id = $2 RETURNING *", [hotel_id, employee_id]);
+        res.json(updateEmployee.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
