@@ -27,7 +27,7 @@ export default function Views() {
         ev.preventDefault();
         setHotelId(ev.target.value);
         const view = await axios.get('rooms_capacity', {params: {hotel_id: ev.target.value}});
-        console.log(view.data);
+        // console.log(view.data);
         setRoomCapacity(view.data);
         setCapacityView(true);
     }

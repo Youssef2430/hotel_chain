@@ -16,6 +16,8 @@ import ReservationsPage from './ReservationsPage.jsx';
 import ReservationPage from './ReservationPage.jsx';
 import Bookings from './Bookings.jsx';
 import RatingPage from './RatingPage.jsx';
+import Offices from './Offices.jsx';
+import CentralOfficeAdd from './CentralOfficeAdd.jsx';
 
 export default function AccountPage() {
     const {role, ready, user, setUser} = useContext(UserContext);
@@ -163,6 +165,10 @@ export default function AccountPage() {
             <Bookings/>}
             {subpage === 'bookings' && subpage2 &&
             <RatingPage/>}
+            {subpage === 'offices' && subpage2 === undefined &&
+            <Offices/>}
+            {subpage === 'offices' && subpage2 &&
+            <CentralOfficeAdd/>}
         </div>
     );
     

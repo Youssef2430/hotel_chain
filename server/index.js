@@ -641,3 +641,34 @@ app.put('/change_employee_hotel', async (req, res) => {
         console.error(err.message);
     }
 } );
+
+app.post('/add_office', async (req, res) => {
+    try {
+        const {officeName, address, phone, email, chainid} = req.body;
+        const newOffice = await pool.query("INSERT INTO central_office (chain_id, email, phone_number, address, office_name) VALUES ($1, $2, $3, $4, $5) RETURNING *", [chainid, email, [phone], address, officeName]);
+        res.json(newOffice.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.get('/offices', async (req, res) => {
+    try {
+        const {chain_id} = req.query;
+        const allOffice = await pool.query("SELECT * FROM central_office WHERE chain_id = $1", [chain_id]);
+        res.json(allOffice.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
+
+app.delete('/offices/:chain_id/:id', async (req, res) => {
+    try {
+        const { chain_id, id } = req.params;
+        const deleteOffice = await pool.query("DELETE FROM central_office WHERE office_id = $1", [id]);
+        const newOffice = await pool.query("SELECT * FROM central_office WHERE chain_id = $1", [chain_id]);
+        res.json(newOffice.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+} );
