@@ -516,9 +516,10 @@ app.post('/confirm-reservation/:id', async (req, res) => {
 
 app.get('/search', async (req, res) => {
     try {
-        const {hotel_chain_id, hotel_id, city, checkIn, checkOut, num_of_rooms, price, rating} = req.query;
+        const {hotel_chain_id, hotel_id, city, checkIn, checkOut, num_of_rooms, price, rating, category} = req.query;
         // console.log(hotel_chain_id, hotel_id, city, checkIn, checkOut, num_of_rooms, price, rating);
         let query1 = [];
+        if(category !== '') query1.push(`category = '${category}'`);
         if(hotel_chain_id !== '') query1.push(`chain_id = ${hotel_chain_id}`);
         if(hotel_id !== '') query1.push(`hotel_id = ${hotel_id}`);
         if(city !== '') query1.push(`(address like '%${city}%')`);

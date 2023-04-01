@@ -15,6 +15,7 @@ export default function SearchBar(props) {
     const [numRooms, setNumRooms] = useState('');
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
+    const [category, setCategory] = useState('');
     const navigate = useNavigate();
 
     async function setVariables(ev){
@@ -22,42 +23,47 @@ export default function SearchBar(props) {
         let response = null;
         if (ev.target.id === "chains") {
             setHotelChain(ev.target.value);
-            response = await axios.get("/search", {params : {hotel_chain_id: ev.target.value, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating}});
+            response = await axios.get("/search", {params : {hotel_chain_id: ev.target.value, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating, category: category}});
             props.setSearchResults(response.data);
             console.log(response.data);
         } else if (ev.target.id === "hotels") {
             setHotel(ev.target.value);
-            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: ev.target.value, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating}});
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: ev.target.value, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating, category: category}});
             props.setSearchResults(response.data);
             console.log(response.data);
         } else if (ev.target.id === "regions") {
             setRegion(ev.target.value);
-            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: ev.target.value, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating}});
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: ev.target.value, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating, category: category}});
             props.setSearchResults(response.data);
             console.log(response.data);
         } else if (ev.target.id === "price") {
             setPrice(ev.target.value);
-            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:ev.target.value, rating: rating}});
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:ev.target.value, rating: rating, category: category}});
             props.setSearchResults(response.data);
             console.log(response.data);
         } else if (ev.target.id === "rating") {
             setRating(ev.target.value);
-            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: ev.target.value}});
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: ev.target.value, category: category}});
             props.setSearchResults(response.data);
             console.log(response.data);
         } else if (ev.target.id === "numRooms") {
             setNumRooms(ev.target.value);
-            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: ev.target.value, price:price, rating: rating}});
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: ev.target.value, price:price, rating: rating, category: category}});
             props.setSearchResults(response.data);
             console.log(response.data);
         } else if (ev.target.id === "checkIn") {
             setCheckIn(ev.target.value);
-            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: ev.target.value, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating}});
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: ev.target.value, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating, category: category}});
             props.setSearchResults(response.data);
             console.log(response.data);
         } else if (ev.target.id === "checkOut") {
             setCheckOut(ev.target.value);
-            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: ev.target.value, num_of_rooms: numRooms, price:price, rating: rating}});
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: ev.target.value, num_of_rooms: numRooms, price:price, rating: rating, category: category}});
+            props.setSearchResults(response.data);
+            console.log(response.data);
+        } else if (ev.target.id === "category") {
+            setCategory(ev.target.value);
+            response = await axios.get("/search", {params : {hotel_chain_id: hotel_chain, hotel_id: hotel, city: region, checkIn: checkIn, checkOut: checkOut, num_of_rooms: numRooms, price:price, rating: rating, category: ev.target.value}});
             props.setSearchResults(response.data);
             console.log(response.data);
         }
@@ -92,10 +98,16 @@ export default function SearchBar(props) {
 
     return (
         <form className="m-8" onSubmit={goToViews}>
-            <div>
+            <div className="grid gap-2 grid-cols-[2fr_1fr]">
                 <select className='w-full border my-2 py-2 px-3 rounded-2xl' id="chains" value={hotel_chain} onChange={search}>
                     <option value="">Select hotel chain</option>
                     {hotelChains.map(hotelChain => <option key={hotelChain.chain_id} value={hotelChain.chain_id}>{hotelChain.name}</option>)}
+                </select>
+                <select className='w-full border my-2 py-2 px-3 rounded-2xl' id="category" value={category} onChange={search}>
+                    <option value="">Select a category</option>
+                    <option value="Luxurious">Luxurious</option>
+                    <option value="Comfortable">Comfortable</option>
+                    <option value="Economic">Economic</option>
                 </select>
             </div>
             <div className="flex gap-3">
