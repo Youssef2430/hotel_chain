@@ -11,10 +11,11 @@ export function UserContextProvider({ children }) {
         if(!user) {
             axios.get("/profile").then(({data}) => {
                 setUser(data);
-                setReady(true);
+                
             });
             axios.get("/role").then((data) => {
                 setRole(data.data);
+                setReady(true);
             });   
         }
     }, [user]);
