@@ -15,3 +15,8 @@ This is a website representing a hotel chain
 ### On the client side
 1. Run 'npm install'
 2. Run  command 'npm start' to start the web app
+
+### Test account 
+- admin : admin@test.ca - test
+- employee : employee@test.ca - test
+- customer : test@test.ca - test
